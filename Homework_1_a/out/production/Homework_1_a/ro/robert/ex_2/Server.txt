@@ -1,0 +1,60 @@
+package ro.robert.ex_2;
+
+import jdk.net.Sockets;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server_ex_2 {
+
+    private static BufferedReader reader;
+    private static PrintWriter writer;
+    private static Socket socket;
+    private static ServerSocket serverSocket;
+
+
+    public static void startServer(int port) {
+        try {
+            serverSocket = new ServerSocket(port);
+            socket = serverSocket.accept();
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream());
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        startServer(6666);
+        while (true) {
+            String msg = listenForMessages();
+            sendMessages(msg);
+            socket = serverSocket.accept();
+        }
+    }
+
+    private static void sendMessages(String string) {
+        int number = 0;
+        for (int i = 0; i < string.length() && string.charAt(i) != '\0'; i++) {
+            if (string.charAt(i) == ' ') {
+                number++;
+            }
+        }
+        writer.println(number);
+        writer.flush();
+    }
+
+    private static String listenForMessages() throws IOException {
+        String str = reader.readLine();
+        if(str==null){
+            throw new IOException("Costeleeeeee");
+        }
+        return str;
+    }
+}

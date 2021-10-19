@@ -1,0 +1,69 @@
+package ro.robert.ex_2;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class Client_ex_2 {
+    private static BufferedReader reader;
+    private static PrintWriter writer;
+    private static BufferedReader scanner;
+
+
+    public static void main(String[] args) {
+        connectServer();
+        String msg = readMsg();
+        sendMessage(msg);
+        listenMessage();
+    }
+
+    private static void listenMessage() {
+        try {
+            int n = Integer.parseInt(reader.readLine());
+            System.out.println("Number of spaces: " + n);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private static void sendMessage(String msg) {
+        writer.println(msg);
+        writer.flush();
+    }
+
+
+    private static String readMsg() {
+        String str = null;
+        try {
+            str = reader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
+
+    private static void connectServer() {
+        try {
+            Socket socket = new Socket("localhost", 6666);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            scanner = new BufferedReader(new InputStreamReader(System.in));
+            writer = new PrintWriter(socket.getOutputStream());
+        } catch (Exception e) {
+            System.out.println(e);
+            closeSocket();
+        }
+    }
+
+    private static void closeSocket() {
+        try {
+            reader.close();
+            scanner.close();
+            writer.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
